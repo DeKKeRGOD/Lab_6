@@ -1,0 +1,123 @@
+#include <conio.h>
+#include <iostream>
+using namespace std;
+struct Metro
+{
+	char MetroSt[60];
+	char MetroLine[60];
+	unsigned int NumMetLine;
+	Metro *pNext;
+};
+void addFirst(Metro *& pF, Metro* p)
+{
+	p->pNext = pF;
+	pF = p;
+}
+
+Metro * delFirst(Metro *&pF)
+{
+	if (pF == 0) return 0;
+	Metro *p = pF;
+	pF = pF->pNext;
+	return p;
+
+}
+
+bool add(Metro *&pF, Metro * pSet, Metro *p)
+{
+
+	if (pSet == pF)
+	{
+		p->pNext = pF;
+		pF = p;
+		return true;
+	}
+
+	Metro *pPrev = pF;
+	while (pPrev->pNext != pSet && pPrev->pNext)
+		pPrev = pPrev->pNext;
+	if (pPrev->pNext == 0) return false;
+	p->pNext = pSet;
+	pPrev->pNext = p;
+	return true;
+}
+
+Metro * del(Metro*& pF, Metro *p)
+{
+	if (pF == 0) return 0;
+	if (pF == p)
+	{
+		pF = pF->pNext;
+		return p;
+	}
+	else
+	{
+		Metro *pPrev = pF;
+		while (pPrev->pNext != p && pPrev->pNext)
+			pPrev = pPrev->pNext;
+		if (pPrev->pNext == 0) return 0;
+		pPrev->pNext = p->pNext;
+		return p;
+	}
+	while (delFirst(pF));
+}
+
+int main(int argc, char* argv[])
+{
+	Metro *pF = 0;
+	Metro *p;
+
+	char Finr;
+	do
+	{
+		p = (Metro *)malloc(sizeof(Metro));
+		cout << endl;
+		cout << "Number of Metro line: ";
+		fflush(stdin);
+		cin >> p->NumMetLine;
+
+		cout << "Name of Metro line: ";
+		fflush(stdin);
+		gets_s(p->MetroLine, 59);
+
+		cout << "Name of Metro station: ";
+		fflush(stdin);
+		gets_s(p->MetroSt, 59);
+
+		addFirst(pF, p);
+		printf("For continue press Z else any key! ");
+		Finr = _getche();
+		cin.clear();
+		cout << endl;
+
+	} while (Finr == 'Z' || Finr == 'z');
+	cout << endl;
+	cout << "Unsorted: " << endl;
+	for (Metro *pi = pF; pi; pi = pi->pNext)
+		cout << pi->NumMetLine << " " << pi->MetroLine << " " << pi->MetroSt << endl;
+
+	for (Metro *pi = pF; pi->pNext;)
+	{
+
+		double min = pi->NumMetLine;
+		Metro *pmin = pi;
+		for (Metro *pj = pi->pNext; pj; pj = pj->pNext)
+			if (pj->NumMetLine<min)
+			{
+				min = pj->NumMetLine;
+				pmin = pj;
+			}
+		if (pi != pmin)
+		{
+			del(pF, pmin);
+			add(pF, pi, pmin);
+		}
+		else pi = pi->pNext;
+	}
+
+	cout << endl;
+	cout << "Sorted: " << endl;
+	for (Metro *pi = pF; pi; pi = pi->pNext)
+		cout << pi->NumMetLine << " " << pi->MetroLine << " " << pi->MetroSt << endl;
+	system("pause");
+}
